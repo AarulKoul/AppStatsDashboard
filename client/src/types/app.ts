@@ -1,0 +1,20 @@
+export type App = {
+  "App Name": string;
+  "App Id": string;
+  Category: string;
+  Rating: number;
+  "Rating Count": number;
+  Installs: string;
+  "Maximum Installs": number;
+  Free: boolean;
+  Price: number;
+  Currency: string;
+  Size: string;
+  "Minimum Android": string;
+  "Developer Id": string;
+  Released: string;
+  "Last Updated": string;
+  "Content Rating": string;
+  "Ad Supported": boolean;
+  "In App Purchases": boolean;
+};
