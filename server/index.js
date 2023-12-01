@@ -20,26 +20,45 @@ app.get("/", async (req, res) => {
 
 app.get("/top-free", async (req, res) => {
   const pageSize = 10;
-  const { page = 1 } = req.query;
-  const apps = await App.find({ Free: true })
+  let { page = 1, category = "All" } = req.query;
+  if (category === "All") category = "";
+  const apps = await App.find({
+    Free: true,
+    Category: { $regex: category + "$" },
+  })
     .sort({ "Maximum Installs": -1 })
     .skip(page * pageSize)
     .limit(10);
-  const total = await App.find({ Free: true }).count();
+  const total = await App.find({
+    Free: true,
+    Category: { $regex: category + "$" },
+  }).count();
 
   res.json({ total, apps });
 });
 
 app.get("/top-paid", async (req, res) => {
   const pageSize = 10;
-  const { page = 1 } = req.query;
-  const apps = await App.find({ Free: false })
+  let { page = 1, category = "All" } = req.query;
+  if (category === "All") category = "";
+  const apps = await App.find({
+    Free: false,
+    Category: { $regex: category + "$" },
+  })
     .sort({ "Maximum Installs": -1 })
     .skip(page * pageSize)
     .limit(10);
-  const total = await App.find({ Free: false }).count();
+  const total = await App.find({
+    Free: false,
+    Category: { $regex: category + "$" },
+  }).count();
 
   res.json({ total, apps });
+});
+
+app.get("/all-categories", async (req, res) => {
+  const categories = await App.distinct("Category");
+  res.json(categories);
 });
 
 app.get("/categories", async (req, res) => {

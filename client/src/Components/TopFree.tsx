@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
-  Card,
   Table,
   TableBody,
   TableCell,
@@ -9,30 +8,28 @@ import {
   TableRow,
   Text,
 } from "@tremor/react";
-import { App } from "../types/app";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import React, { useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { App } from "../types/app";
 
 type FetchResponse = {
   apps: App[];
   total: number;
 };
 
-const TopFree = () => {
-  // const [data, setData] = useState<App[]>([]);
+const TopFree = ({ category }: { category: string }) => {
   const [page, setPage] = useState(0);
-  // const [loading, setLoading] = useState<boolean>(false);
-  const fetchTopFree = (page = 0) => {
-    return fetch("http://localhost:3000/top-free?page=" + page).then((res) =>
-      res.json()
-    );
+  const fetchTopFree = (page = 0, category = "All") => {
+    return fetch(
+      `http://localhost:3000/top-free?page=${page}&category=${category}`
+    ).then((res) => res.json());
   };
 
   const { data, isLoading, isPlaceholderData } = useQuery<FetchResponse, Error>(
     {
-      queryKey: ["top-free", page],
-      queryFn: () => fetchTopFree(page),
+      queryKey: ["top-free", page, category],
+      queryFn: () => fetchTopFree(page, category),
       placeholderData: keepPreviousData,
     }
   );
@@ -46,19 +43,21 @@ const TopFree = () => {
   const totalPages = Math.ceil((data?.total ?? 0) / 10);
 
   return (
-    <Card>
+    <>
       {!isPlaceholderData && isLoading ? (
         <div className="w-full h-72 grid place-items-center">
           <Loader2 className="animate-spin text-blue-500" />
         </div>
       ) : (
-        <>
+        <div>
           <Table className="min-w-full">
             <TableHead>
               <TableRow className="text-left">
                 <TableHeaderCell className="py-1"></TableHeaderCell>
                 <TableHeaderCell className="py-1">Name</TableHeaderCell>
-                <TableHeaderCell className="py-1">Category</TableHeaderCell>
+                {category === "All" ? (
+                  <TableHeaderCell className="py-1">Category</TableHeaderCell>
+                ) : null}
                 <TableHeaderCell className="py-1">Rating</TableHeaderCell>
                 <TableHeaderCell className="py-1">Downloads</TableHeaderCell>
               </TableRow>
@@ -77,9 +76,11 @@ const TopFree = () => {
                     <TableCell className="py-3 px-4 w-full truncate">
                       {item["App Name"]}
                     </TableCell>
-                    <TableCell className="py-3 px-4">
-                      <Text>{item["Category"]}</Text>
-                    </TableCell>
+                    {category === "All" ? (
+                      <TableCell className="py-3 px-4">
+                        <Text>{item["Category"]}</Text>
+                      </TableCell>
+                    ) : null}
                     <TableCell className="py-3 px-4 ">
                       <Text className="whitespace-nowrap">
                         {Number(item["Rating"]).toFixed(1)}{" "}
@@ -127,9 +128,9 @@ const TopFree = () => {
               renderOnZeroPageCount={null}
             />
           </div>
-        </>
+        </div>
       )}
-    </Card>
+    </>
   );
 };
 
