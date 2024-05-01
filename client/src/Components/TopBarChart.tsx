@@ -1,15 +1,15 @@
 import { useState } from "react";
-import TopFree from "./TopFree";
-import TopPaid from "./TopPaid";
+import FreeBarChart from "./FreeBarChart";
+import PaidBarChart from "./PaidBarChart";
 
 import { Card, SearchSelect, SearchSelectItem, Title } from "@tremor/react";
 import { useQuery } from "@tanstack/react-query";
 
 const tabs = [
-  { name: "Top Free Details", Component: TopFree },
-  { name: "Top Paid Details", Component: TopPaid },
+  { name: "Top Free Installations", Component: FreeBarChart },
+  { name: "Top Paid Installations", Component: PaidBarChart },
 ];
-const TopChart = () => {
+const TopBarChart = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [category, setCategory] = useState("All");
 
@@ -77,4 +77,4 @@ const TopChart = () => {
   );
 };
 
-export default TopChart;
+export default TopBarChart;
